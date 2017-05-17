@@ -80,16 +80,18 @@ template<> struct format_impl<value_t::String>
     typedef detail::toml_default_type<value_t::String>::type type;
 
     std::size_t max_length;
+    std::size_t key_length;
 
-    format_impl() : max_length(80){}
-    format_impl(std::size_t mx) : max_length(mx){}
+    format_impl() : max_length(80), key_length(0){}
+    format_impl(std::size_t mx) : max_length(mx), key_length(0){}
+    format_impl(std::size_t mx, std::size_t kl):max_length(mx), key_length(kl){}
 
     std::basic_string<toml::character>
     operator()(const type& val)
     {
         auto tmp = make_inline(val);
         if(max_length == std::numeric_limits<std::size_t>::max() ||
-           tmp.size() <= max_length) return tmp;
+           tmp.size() + key_length <= max_length) return tmp;
         return convert_multiline(std::move(tmp));
     }
 
