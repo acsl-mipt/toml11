@@ -204,7 +204,7 @@ template<> struct format_impl<value_t::Array>
         retval += '[';
         for(const auto& item : val)
         {
-            auto tmp = format(val, max_length - 1);
+            auto tmp = format(item, max_length - 1);
             retval += tmp;
             retval += ", ";
             if(tmp.size() * 2 > max_length) retval += '\n';
@@ -279,20 +279,34 @@ format(const value& v, std::size_t inl)
 
 template<typename traits, typename alloc>
 std::basic_string<toml::character, traits, alloc>
-format(std::basic_string<toml::character, traits, alloc> key, const value& val)
+format(toml::key const& key, toml::value const& val)
 {
-    std::basic_string<toml::character, traits, alloc> retval(std::move(key));
-    retval += " = ";
+    std::basic_string<toml::character, traits, alloc> retval;
+    if(val.type() == value_t::Table)
+    {
+        retval += '['; retval += key; retval += "]\n";
+    }
+    else
+    {
+        retval += key; retval += " = ";
+    }
     retval += format(val);
     return retval;
 }
 
 template<typename traits, typename alloc>
 std::basic_string<toml::character, traits, alloc>
-format(std::basic_string<toml::character, traits, alloc> key, const value& val, std::size_t mk)
+format(toml::key const& key, toml::value const& val, std::size_t mk)
 {
-    std::basic_string<toml::character, traits, alloc> retval(std::move(key));
-    retval += " = ";
+    std::basic_string<toml::character, traits, alloc> retval;
+    if(val.type() == value_t::Table)
+    {
+        retval += '['; retval += key; retval += ']';
+    }
+    else
+    {
+        retval += key; retval += " = ";
+    }
     retval += format(val, mk);
     return retval;
 }

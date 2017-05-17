@@ -37,5 +37,6 @@
 #include "toml/to_toml.hpp"
 #include "toml/from_toml.hpp"
 #include "toml/get.hpp"
+#include "toml/format.hpp"
 
 #endif// TOML_FOR_MODERN_CPP
