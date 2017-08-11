@@ -1,5 +1,7 @@
 #ifndef TOML11_DATETIME
 #define TOML11_DATETIME
+#include "convert_time.hpp"
+
 #include <chrono>
 #include <iomanip>
 #include <ctime>
@@ -68,7 +70,8 @@ struct basic_datetime
         {
             const auto now = std::chrono::system_clock::now();
             const auto t = std::chrono::system_clock::to_time_t(now);
-            std::tm* t_ = std::localtime(&t);
+            std::tm tm_;
+            std::tm* t_ = detail::localtime(std::addressof(t), std::addressof(tm_));
             time.tm_year = t_->tm_year;
             time.tm_mon  = t_->tm_mon;
             time.tm_mday = t_->tm_mday;
@@ -101,7 +104,8 @@ template<typename uT, typename iT>
 basic_datetime<uT, iT>::basic_datetime(std::chrono::system_clock::time_point tp)
 {
     const auto t = std::chrono::system_clock::to_time_t(tp);
-    std::tm *time = std::localtime(&t);
+    std::tm tm_;
+    std::tm* time = detail::localtime(std::addressof(t), std::addressof(tm_));
     this->year   = time->tm_year + 1900;
     this->month  = time->tm_mon + 1;
     this->day    = time->tm_mday;
@@ -115,7 +119,7 @@ basic_datetime<uT, iT>::basic_datetime(std::chrono::system_clock::time_point tp)
     this->microsecond = std::chrono::duration_cast<std::chrono::microseconds
         >(diff).count() % 1000;
 
-    std::tm *utc = std::gmtime(&t);
+    std::tm *utc = detail::gmtime(std::addressof(t), std::addressof(tm_));
     int total_offset = (this->hour   - utc->tm_hour) * 60 +
                        (this->minute - utc->tm_min);
          if(total_offset >  720) total_offset -= 1440;
