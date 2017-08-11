@@ -1,7 +1,10 @@
 #ifndef TOML11_TIME_CONVERT
 #define TOML11_TIME_CONVERT
 
-#define __STDC_WANT_LIB_EXT1__
+#ifndef __STDC_WANT_LIB_EXT1__
+#define __STDC_WANT_LIB_EXT1__ 1
+#endif//__STDC_WANT_LIB_EXT1__
+
 #include <time.h>
 
 #ifdef __STDC_LIB_EXT1__
@@ -61,7 +64,7 @@ inline std::tm* gmtime(const std::time_t* time_, std::tm* tm_)
 
 inline std::tm* gmtime(const std::time_t* time_, std::tm* tm_)
 {
-    tm_ = std::gmtime(time_, tm_);
+    tm_ = std::gmtime(time_);
     return tm_;
 }
 
