@@ -38,10 +38,11 @@ inline std::tm* localtime(const std::time_t* time_, std::tm* tm_)
 
 #else // fallback
 
-inline std::tm* localtime(const std::time_t* time_, std::tm*& tm_)
+inline std::tm* localtime(const std::time_t* time_, std::tm* tm_)
 {
-    tm_ = std::localtime(time_);
-    return tm_;
+    std::tm* tmp = std::localtime(time_);
+    *tm_ = *tmp;
+    return tmp;
 }
 
 #endif
@@ -64,8 +65,9 @@ inline std::tm* gmtime(const std::time_t* time_, std::tm* tm_)
 
 inline std::tm* gmtime(const std::time_t* time_, std::tm* tm_)
 {
-    tm_ = std::gmtime(time_);
-    return tm_;
+    std::tm* tmp = std::gmtime(time_);
+    *tm_ = *tmp;
+    return tmp;
 }
 
 #endif
