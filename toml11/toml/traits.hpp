@@ -1,6 +1,8 @@
 #ifndef TOML11_TRAITS
 #define TOML11_TRAITS
 #include <type_traits>
+#include <utility>
+#include <tuple>
 
 namespace toml
 {
@@ -58,14 +60,54 @@ struct has_resize_method : decltype(has_resize_method_impl::check<T>(nullptr)){}
 #undef decltype(...)
 #endif
 
-template<typename T>
-struct is_container : std::integral_constant<bool,
-    has_iterator<T>::value && has_value_type<T>::value>{};
+template<typename ...> struct conjunction : std::true_type{};
+template<typename T>   struct conjunction<T> : T{};
+template<typename T, typename ... Ts>
+struct conjunction<T, Ts...> :
+    std::conditional<static_cast<bool>(T::value), conjunction<Ts...>, T>::type
+{};
+
+template<typename ...> struct disjunction : std::false_type{};
+template<typename T>   struct disjunction<T> : T {};
+template<typename T, typename ... Ts>
+struct disjunction<T, Ts...> :
+    std::conditional<static_cast<bool>(T::value), T, disjunction<Ts...>>::type
+{};
 
 template<typename T>
-struct is_map : std::integral_constant<bool,
-    has_iterator<T>::value && has_key_type<T>::value &&
-    has_mapped_type<T>::value>{};
+struct negation : std::integral_constant<bool, !static_cast<bool>(T::value)>{};
+
+template<typename T> struct is_std_pair : std::false_type{};
+template<typename T1, typename T2>
+struct is_std_pair<std::pair<T1, T2>> : std::true_type{};
+
+template<typename T> struct is_std_tuple : std::false_type{};
+template<typename ... Ts>
+struct is_std_tuple<std::tuple<Ts...>> : std::true_type{};
+
+// to use toml::get<std::tuple<T1, T2, ...>> in C++11
+template<std::size_t ... Ns> struct index_sequence{};
+
+template<typename IS, std::size_t N> struct push_back_index_sequence{};
+template<std::size_t N, std::size_t ... Ns>
+struct push_back_index_sequence<index_sequence<Ns...>, N>
+{
+    typedef index_sequence<Ns..., N> type;
+};
+
+template<std::size_t N>
+struct index_sequence_maker
+{
+    typedef typename push_back_index_sequence<
+        typename index_sequence_maker<N-1>::type, N>::type type;
+};
+template<>
+struct index_sequence_maker<0>
+{
+    typedef index_sequence<0> type;
+};
+template<std::size_t N>
+using make_index_sequence = typename index_sequence_maker<N-1>::type;
 
 }// detail
 }//toml

@@ -4,6 +4,7 @@ toml11
 [![Build Status](https://travis-ci.org/ToruNiina/toml11.svg?branch=master)](https://travis-ci.org/ToruNiina/toml11)
 [![Build status](https://ci.appveyor.com/api/projects/status/m2n08a926asvg5mg?svg=true)](https://ci.appveyor.com/project/ToruNiina/toml11)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1209136.svg)](https://doi.org/10.5281/zenodo.1209136)
 
 c++11 header-only toml parser depending only on c++11 standard library.
 
@@ -266,6 +267,14 @@ typedef basic_datetime<unsigned, int> Datetime;
 It must be noted that the range of some values in `basic_datetime` is different
 from `std::tm`. For example, month is in the range of `[1,12]` and year starts
 from 0 (not 1900).
+
+## Contributors
+
+I thank the contributor for providing great feature to this repository.
+
+- Guillaume Fraux (@Luthaf)
+  - Windows support and CI on Appvayor
+  - Intel Compiler support
 
 ## Licensing terms
 
